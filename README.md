@@ -1,4 +1,5 @@
 # Bubble sort visualisation
+Deployed - [https://silly-poitras-a95c85.netlify.app/](https://silly-poitras-a95c85.netlify.app/)
 
 ## Available Scripts
 
