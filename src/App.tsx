@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "./App.css";
+import "./styles/app.scss";
 import { COLUMNS_COUNT, MAX_NUMBER, SORT_INTERVAL_MS } from "./const";
 import { isSorted } from "./utils/utils";
 import {
@@ -7,7 +7,9 @@ import {
   getNumbersAfterSortIteration,
 } from "./business-logic/business-logic";
 
-import NumberColumn from "./components/number-сolumn/number-сolumn";
+import Columns from "./components/columns/columns";
+import Status from "./components/status/status";
+import Controls from "./components/controls/controls";
 
 const App = () => {
   /**
@@ -16,17 +18,7 @@ const App = () => {
   const initialNumbers = generateNumbers(COLUMNS_COUNT, MAX_NUMBER);
   const [numbers, setNumbers] = useState(initialNumbers);
   const [sortInterval, setSortInterval] = useState(0);
-
-  /**
-   * Handlers
-   */
-  const onStartClick = (): void => {
-    startSorting();
-  };
-
-  const onResetClick = (): void => {
-    stopSorting();
-  };
+  const [isSolved, setSolved] = useState(false);
 
   /**
    * Functions
@@ -39,6 +31,7 @@ const App = () => {
 
         if (isSorted(numbersAfterSortIteration)) {
           window.clearInterval(intervalId);
+          setSolved(true);
         }
 
         return numbersAfterSortIteration;
@@ -47,21 +40,19 @@ const App = () => {
 
     setSortInterval(intervalId);
   };
+  const reset = ():void => {
+    stopSorting();
+
+    const newNumbers = generateNumbers(COLUMNS_COUNT, MAX_NUMBER);
+    setNumbers(newNumbers);
+  }
 
   return (
     <main role="application" className="bubble-sort">
       <h1 className="bubble-sort__title">Bubble sort</h1>
-      <div className="bubble-sort__columns">
-        {numbers.map((number, index) => (
-          <NumberColumn key={index} number={number} />
-        ))}
-      </div>
-      <button type="button" onClick={onResetClick}>
-        new set
-      </button>
-      <button type="button" onClick={onStartClick}>
-        start
-      </button>
+      <Columns numbers={numbers} />
+      <Controls reset={reset} startSorting={startSorting} />
+      <Status isSolved={isSolved} />
     </main>
   );
 };

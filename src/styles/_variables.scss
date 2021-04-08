@@ -1,0 +1,13 @@
+:root {
+  --blue: #3786d9;
+  --gray: #636363;
+  --red: #ff5722;
+  --green: #4caf50;
+
+  --base-radius: 3px;
+
+  --column-color: var(--blue);
+  --border-color: var(--gray);
+  --status-unsolved-color: var(--red);
+  --status-solved-color: var(--green);
+}

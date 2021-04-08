@@ -1,0 +1,29 @@
+.bubble-sort {
+  max-width: 30em;
+  margin: 10em auto;
+
+  &__title {
+    text-align: center;
+    margin-bottom: 1em;
+  }
+
+  &__columns {
+    margin-bottom: 1em;
+  }
+
+  &__status {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: 700;
+
+    &_solved {
+      &_true {
+        color: var(--status-solved-color);
+      }
+
+      &_false {
+        color: var(--status-unsolved-color);
+      }
+    }
+  }
+}
