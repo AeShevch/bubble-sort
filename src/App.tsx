@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { PureComponent, ReactNode } from "react";
 import "./styles/app.scss";
 import { COLUMNS_COUNT, MAX_NUMBER, SORT_INTERVAL_MS } from "./const";
 import { isSorted } from "./utils/utils";
@@ -11,50 +11,68 @@ import Columns from "./components/columns/columns";
 import Status from "./components/status/status";
 import Controls from "./components/controls/controls";
 
-const App = () => {
-  /**
-   * State
-   */
-  const initialNumbers = generateNumbers(COLUMNS_COUNT, MAX_NUMBER);
-  const [numbers, setNumbers] = useState(initialNumbers);
-  const [sortInterval, setSortInterval] = useState(0);
-  const [isSolved, setSolved] = useState(false);
+type IState = {
+  numbers: number[];
+  sortIntervalId: number;
+  isSolved: boolean;
+};
+
+export default class App extends PureComponent<{}, IState> {
+  constructor() {
+    super({});
+
+    this.state = {
+      numbers: generateNumbers(COLUMNS_COUNT, MAX_NUMBER),
+      sortIntervalId: 0,
+      isSolved: false,
+    };
+
+    this.reset = this.reset.bind(this);
+    this.startSorting = this.startSorting.bind(this);
+  }
 
   /**
-   * Functions
+   * Methods
    */
-  const stopSorting = (): void => window.clearInterval(sortInterval);
-  const startSorting = (): void => {
+  public readonly stopSorting = (): void =>
+    window.clearInterval(this.state.sortIntervalId);
+
+  public readonly startSorting = (): void => {
     const intervalId = window.setInterval(() => {
-      setNumbers((numbers) => {
+      this.setState(({ numbers }, {}) => {
         const numbersAfterSortIteration = getNumbersAfterSortIteration(numbers);
 
         if (isSorted(numbersAfterSortIteration)) {
           window.clearInterval(intervalId);
-          setSolved(true);
+          this.setState({ isSolved: true });
         }
 
-        return numbersAfterSortIteration;
+        return {
+          numbers: numbersAfterSortIteration,
+        };
       });
     }, SORT_INTERVAL_MS);
 
-    setSortInterval(intervalId);
+    this.setState({ sortIntervalId: intervalId });
   };
-  const reset = ():void => {
-    stopSorting();
+
+  public readonly reset = (): void => {
+    this.stopSorting();
 
     const newNumbers = generateNumbers(COLUMNS_COUNT, MAX_NUMBER);
-    setNumbers(newNumbers);
+    this.setState({ numbers: newNumbers });
+  };
+
+  render(): ReactNode {
+    const { numbers, isSolved } = this.state;
+
+    return (
+      <main role="application" className="bubble-sort">
+        <h1 className="bubble-sort__title">Bubble sort</h1>
+        <Columns numbers={numbers} />
+        <Controls reset={this.reset} startSorting={this.startSorting} />
+        <Status isSolved={isSolved} />
+      </main>
+    );
   }
-
-  return (
-    <main role="application" className="bubble-sort">
-      <h1 className="bubble-sort__title">Bubble sort</h1>
-      <Columns numbers={numbers} />
-      <Controls reset={reset} startSorting={startSorting} />
-      <Status isSolved={isSolved} />
-    </main>
-  );
-};
-
-export default App;
+}
